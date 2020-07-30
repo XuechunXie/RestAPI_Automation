@@ -1,0 +1,99 @@
+package stepDefinition;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.*;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import pojo.GoogleMaps;
+import pojo.Location;
+import resources.APIResources;
+import resources.TestDataBuild;
+import resources.Utils;
+
+public class stepDefinition extends Utils {
+	
+	RequestSpecification res;
+	ResponseSpecification responsSpe;
+	Response response2;
+	TestDataBuild data = new TestDataBuild();
+	static String place_id;
+	
+	@Given("Add Place Payload {string} {string} {string}")
+	public void add_place_payload(String name, String language, String address) throws IOException {
+		
+		//Request Spec Builder	
+		res = given().spec(requestSpecification()).body(data.addPlacePayload(name, language, address));
+	}
+
+	
+	@When("user calls {string} with {string} http request")
+	//The value in {String} will go into resource = "addPlaceAPI"
+	public void user_calls_with_http_request(String resource, String method) {
+		
+		//firstly, valueOf("addPlaceAPI") will get the value of addPlaceAPI("/maps/api/place/add/json") in APIResources class--> resource = "/maps/api/place/add/json"
+		//secondly, APIResources constructor will be ran with resource = "/maps/api/place/add/json" --> this.resource = "/maps/api/place/add/json"
+		APIResources resourceAPI = APIResources.valueOf(resource);
+		String api = resourceAPI.getResource();
+		
+		responsSpe = new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();
+	    // Write code here that turns the phrase above into concrete actions
+		if(method.equalsIgnoreCase("POST")) {
+			response2 = res.when().post(api);		
+		}else if(method.equalsIgnoreCase("GET")) {
+			response2 = res.when().get(api);			
+		}else if(method.equalsIgnoreCase("put")) {
+			response2 = res.when().put(api);
+		}else if(method.equalsIgnoreCase("delete")) {
+			response2 = res.when().delete(api);
+		}
+		System.out.println(resource);
+		//response2 = response2.then().spec(responsSpe).extract().response();
+	}
+	
+	@Then("the API call got success with status code {int}")
+	public void the_api_call_got_success_with_status_code(Integer int1) {
+	    // Write code here that turns the phrase above into concrete actions		
+	    assertEquals(response2.getStatusCode(),200);
+	}
+	
+	@Then("{string} in response body is {string}")
+	public void in_response_body_is(String key, String value) {
+	    // Write code here that turns the phrase above into concrete actions
+	    //JsonPath json = new JsonPath(response2.asString());
+	    assertEquals(getJsonPath(response2,key),value);
+	    
+	}
+	
+	@Then("verify place_Id created maps to {string} using {string}")
+	public void verify_place_id_created_maps_to_using(String expectedName, String resource) {
+		place_id = getJsonPath(response2,"place_id");
+		res = given().spec(requestSpe).queryParam("place_id", place_id);
+		user_calls_with_http_request(resource,"GET");
+		String actualName = getJsonPath(response2,"name");
+		assertEquals(actualName,expectedName);
+	}
+	
+
+	@Given("DeletePlace payload")
+	public void delete_place_payload() {
+	    // Write code here that turns the phrase above into concrete actions
+	    res = given().spec(requestSpe).body(data.deletePlacePayload(place_id));
+	}
+
+}

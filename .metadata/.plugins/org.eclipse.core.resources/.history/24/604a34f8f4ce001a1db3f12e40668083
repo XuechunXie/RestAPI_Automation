@@ -1,0 +1,25 @@
+import files.payload;
+import io.restassured.path.json.JsonPath;
+
+public class ComplexJsonPath {
+	
+	public static void main(String[] args) {
+		JsonPath json = new JsonPath(payload.coursePrice());
+		
+		//Refer to https://jsoneditoronline.org/#left=local.regive&right=local.cudili
+		
+		//1. Print No of courses returned by API
+		int noOfCourse = json.getInt("courses.size()");
+		System.out.println("noOfCourse:"+noOfCourse);
+
+		//2.Print Purchase Amount
+
+		//3. Print Title of the first course
+
+		//4. Print All course titles and their respective Prices
+
+		//5. Print no of copies sold by RPA Course
+
+		//6. Verify if Sum of all Course prices matches with Purchase Amount
+	}
+}

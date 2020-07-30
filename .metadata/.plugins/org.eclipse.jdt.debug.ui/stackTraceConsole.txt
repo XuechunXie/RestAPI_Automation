@@ -1,0 +1,6 @@
+org.junit.ComparisonFailure: expected:<[m]ichelle> but was:<[M]ichelle>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at stepDefinition.stepDefinition.verify_place_id_created_maps_to_using(stepDefinition.java:88)
+	at stepDefinition.Hooks.beforeScenario(Hooks.java:15)
+

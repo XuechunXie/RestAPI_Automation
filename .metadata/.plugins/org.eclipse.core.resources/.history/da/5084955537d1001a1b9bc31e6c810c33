@@ -1,0 +1,74 @@
+package stepDefinition;
+
+import static io.restassured.RestAssured.given;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import pojo.GoogleMaps;
+import pojo.Location;
+
+public class stepDefinition {
+	
+	RequestSpecification res;
+	RequestSpecification requestSpe;
+	ResponseSpecification responsSpe;
+	
+	@Given("Add Place Payload")
+	public void add_place_payload() {
+	    // Write code here that turns the phrase above into concrete actions
+		//Set up the body with POJO
+				Location location = new Location();
+				location.setLat(-38.383494);
+				location.setLng(33.427362);
+				List<String> types = new ArrayList<String>();
+				types.add("shoe park");
+				types.add("shop");
+				
+				GoogleMaps map = new GoogleMaps();
+				map.setAccuracy(50);
+				map.setAddress("29, side layout, cohen 09");
+				map.setLanguage("French-IN");
+				map.setLocation(location);
+				map.setName("Frontline house for serialization");
+				map.setPhone_number("(+91) 983 893 3937");
+				map.setTypes(types);
+				map.setWebsite("http://google.com");
+				
+				
+				//Request Spec Builder
+				
+				requestSpe = new RequestSpecBuilder().setBaseUri("https://rahulshettyacademy.com").addQueryParam("key", "qaclick123").setContentType(ContentType.JSON).build();
+				responsSpe = new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();
+				
+				res = given().spec(requestSpe)
+				.body(map);
+	}
+
+
+
+	@When("user calls {string} with post http request")
+	public void user_calls_with_post_http_request(String string) {
+	    // Write code here that turns the phrase above into concrete actions
+		String response2 = res.when().post("/maps/api/place/add/json")
+				.then().spec(responsSpe).extract().response().asString();
+	}
+	@Then("the API call got success with status code {int}")
+	public void the_api_call_got_success_with_status_code(Integer int1) {
+	    // Write code here that turns the phrase above into concrete actions
+	    throw new io.cucumber.java.PendingException();
+	}
+	@Then("{string} in response body is {string}")
+	public void in_response_body_is(String string, String string2) {
+	    // Write code here that turns the phrase above into concrete actions
+	    throw new io.cucumber.java.PendingException();
+	}
+}

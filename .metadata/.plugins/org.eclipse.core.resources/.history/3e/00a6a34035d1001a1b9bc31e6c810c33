@@ -1,0 +1,10 @@
+package cucumber.Options;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+		feature = "src/test/java/features",
+		glue = "stepDefinition"
+		)
+public class TestRunner {
+
+}

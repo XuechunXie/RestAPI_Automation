@@ -1,0 +1,8 @@
+import files.payload;
+
+public class ComplexJsonPath {
+	
+	public static void main(String args[]) {
+		JsonPath json = new JsonPath(payload.coursePrice());
+	}
+}

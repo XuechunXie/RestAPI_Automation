@@ -1,0 +1,50 @@
+import java.util.ArrayList;
+import java.util.List;
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+
+import static io.restassured.RestAssured.*;
+import pojo.GoogleMaps;
+import pojo.Location;
+
+public class SerializationAndDeserialization {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		RestAssured.baseURI = "https://rahulshettyacademy.com";
+		
+		//Set up the body with POJO
+		Location location = new Location();
+		location.setLat(-38.383494);
+		location.setLng(33.427362);
+		List<String> types = new ArrayList<String>();
+		types.add("shoe park");
+		types.add("shop");
+		
+		GoogleMaps map = new GoogleMaps();
+		map.setAccuracy(50);
+		map.setAddress("29, side layout, cohen 09");
+		map.setLanguage("French-IN");
+		map.setLocation(location);
+		map.setName("Frontline house for serialization");
+		map.setPhone_number("(+91) 983 893 3937");
+		map.setTypes(types);
+		map.setWebsite("http://google.com");
+		
+		String response = given().log().all().queryParam("key", "qaclick123").header("Content-Type","application/json").body(map)
+		.when().post("/maps/api/place/add/json")
+		.then().log().all().assertThat().statusCode(200).extract().response().asString();
+		
+		JsonPath json = new JsonPath(response);
+		System.out.println(response);
+		
+		GoogleMaps getMap = given().queryParam("key", "qaclick123")
+				.when().get("/maps/api/place/get/json")
+				.as(GoogleMaps.class);
+		
+		System.out.println(getMap.getName());
+	}
+	
+
+}
